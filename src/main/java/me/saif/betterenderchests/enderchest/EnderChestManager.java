@@ -86,7 +86,8 @@ public class EnderChestManager extends Manager<VariableEnderChests> implements L
         }
 
         //load data for already online players eg. if plugin is reloaded.
-        Bukkit.getScheduler().runTask(plugin, () -> {
+//        Bukkit.getScheduler().runTask(plugin, () -> {
+        VariableEnderChests.scheduler().runTask(() -> {
 
 
             Set<UUID> toGet = Bukkit.getOnlinePlayers().stream().map((Function<Player, UUID>) Entity::getUniqueId).collect(Collectors.toSet());
@@ -117,7 +118,8 @@ public class EnderChestManager extends Manager<VariableEnderChests> implements L
             }
         });
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this.getPlugin(), () -> {
+//        Bukkit.getScheduler().scheduleSyncRepeatingTask(this.getPlugin(), () -> {
+        VariableEnderChests.scheduler().runTaskTimer(() -> {
             Map<UUID, EnderChestSnapshot> toSave = new HashMap<>();
             Set<UUID> toRemove = new HashSet<>();
             for (EnderChest enderChest : this.uuidEnderChestMap.values()) {
@@ -133,7 +135,9 @@ public class EnderChestManager extends Manager<VariableEnderChests> implements L
                 this.getPlugin().getLogger().info("Saving data for " + enderChest.getName());
             }
 
-            Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () -> this.dataManager.saveEnderChestMultiple(toSave));
+//              Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () -> this.dataManager.saveEnderChestMultiple(toSave));
+              VariableEnderChests.scheduler().runTaskAsynchronously(() -> this.dataManager.saveEnderChestMultiple(toSave));
+
 
             for (CaselessString minecraftName : this.nameCallbackMap.keySet()) {
                 Player player = Bukkit.getPlayerExact(minecraftName.getOriginal());
@@ -167,7 +171,8 @@ public class EnderChestManager extends Manager<VariableEnderChests> implements L
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () -> {
+//        Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () -> {
+        VariableEnderChests.scheduler().runTaskAsynchronously(() -> {
             dataManager.saveNameAndUUID(name, uuid);
             EnderChest enderChest = loadData(name, uuid);
 
@@ -177,7 +182,8 @@ public class EnderChestManager extends Manager<VariableEnderChests> implements L
                 this.getPlugin().getLogger().info("Loaded enderchest for " + name);
             }
 
-            Bukkit.getScheduler().runTask(getPlugin(), () -> uuidEnderChestMap.put(uuid, enderChest == null ? createNew(event.getPlayer()) : enderChest));
+//            Bukkit.getScheduler().runTask(getPlugin(), () -> uuidEnderChestMap.put(uuid, enderChest == null ? createNew(event.getPlayer()) : enderChest));
+            VariableEnderChests.scheduler().runTask(() -> uuidEnderChestMap.put(uuid, enderChest == null ? createNew(event.getPlayer()) : enderChest));
         });
     }
 
@@ -331,11 +337,13 @@ public class EnderChestManager extends Manager<VariableEnderChests> implements L
         Callback<EnderChest> callback = new Callback<>();
         this.nameCallbackMap.put(mcName, callback);
 
-        Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () -> {
+//        Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () -> {
+        VariableEnderChests.scheduler().runTaskAsynchronously(() -> {
             EnderChestSnapshot snapshot = this.dataManager.loadEnderChest(name);
 
             EnderChest enderChest = snapshot == null ? null : new EnderChest(snapshot.getUuid(), snapshot.getName(), snapshot.getContents(), snapshot.getRows());
-            Bukkit.getScheduler().runTask(this.getPlugin(), () -> {
+//            Bukkit.getScheduler().runTask(this.getPlugin(), () -> {
+            VariableEnderChests.scheduler().runTask(() -> {
                 this.nameCallbackMap.remove(mcName);
                 if (enderChest != null) {
                     this.uuidEnderChestMap.put(snapshot.getUuid(), enderChest);
@@ -358,11 +366,13 @@ public class EnderChestManager extends Manager<VariableEnderChests> implements L
         Callback<EnderChest> callback = new Callback<>();
         this.uuidCallbackMap.put(uuid, callback);
 
-        Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () -> {
-            EnderChestSnapshot snapshot = this.dataManager.loadEnderChest(uuid);
+//        Bukkit.getScheduler().runTaskAsynchronously(this.getPlugin(), () -> {
+        VariableEnderChests.scheduler().runTaskAsynchronously(() -> {
+        EnderChestSnapshot snapshot = this.dataManager.loadEnderChest(uuid);
 
             EnderChest enderChest = snapshot == null ? null : new EnderChest(snapshot.getUuid(), snapshot.getName(), snapshot.getContents(), snapshot.getRows());
-            Bukkit.getScheduler().runTask(this.getPlugin(), () -> {
+//            Bukkit.getScheduler().runTask(this.getPlugin(), () -> {
+            VariableEnderChests.scheduler().runTask(() -> {
                 this.uuidCallbackMap.remove(uuid);
                 this.uuidEnderChestMap.put(uuid, enderChest);
                 callback.setResult(enderChest);

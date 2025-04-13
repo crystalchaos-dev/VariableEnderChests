@@ -1,5 +1,7 @@
 package me.saif.betterenderchests;
 
+import com.xyrisdev.library.scheduler.XScheduler;
+import com.xyrisdev.library.scheduler.scheduling.schedulers.TaskScheduler;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import me.saif.betterenderchests.command.CommandManager;
 import me.saif.betterenderchests.command.commands.ClearEnderChestCommand;
@@ -70,8 +72,16 @@ public final class VariableEnderChests extends JavaPlugin {
     private CommandManager commandManager;
     private PAPIEnderChestHook enderChestHook;
 
+    // Folia support - being
+    private static TaskScheduler scheduler;
+    // Folia support - end
+
     @Override
     public void onEnable() {
+        // Folia support - being
+        scheduler = XScheduler.of(this);
+        // Folia support - end
+
         API = new VariableEnderChestAPI(this);
         this.saveDefaultConfig();
 
@@ -223,4 +233,10 @@ public final class VariableEnderChests extends JavaPlugin {
     public PlayerLocaleFinder getPlayerLocaleFinder() {
         return playerLocaleFinder;
     }
+
+    // Folia support - being
+    public static TaskScheduler scheduler() {
+        return scheduler;
+    }
+    // Folia support - end
 }

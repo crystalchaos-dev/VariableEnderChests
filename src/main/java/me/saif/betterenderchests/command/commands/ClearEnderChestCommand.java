@@ -93,7 +93,8 @@ public class ClearEnderChestCommand extends PluginCommand {
         }
         this.toClear.put(senderUUID, enderChest);
         messenger.sendMessage(sender, MessageKey.CONFIRM_CLEAR_ENDERCHEST, enderChestPlaceholder.getResult(enderChest));
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> this.toClear.remove(senderUUID), 100L);
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> this.toClear.remove(senderUUID), 100L);
+        VariableEnderChests.scheduler().runTaskLater(() -> this.toClear.remove(senderUUID), 100L);
     }
 
 }
